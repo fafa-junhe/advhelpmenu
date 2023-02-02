@@ -2,7 +2,6 @@
 Advanced Help Menu for sourcemod, using json configs.
 Menus can be paralleled or nested.
 
-
 ## Cvar
 | name        | default                  | description      |
 |-------------|--------------------------|------------------|
@@ -11,10 +10,12 @@ Menus can be paralleled or nested.
 ## Cmd
 - sm_advhr reload helpmenu
 
+## Requirements
+- [sm-json](https://github.com/clugg/sm-json#error-handling) Compile only
 
 ## Config
-Note that shortcuts are chat triggers, use | to split, each menu can only have up to 10 shortcuts, and the maximum number of characters is 10, and those prefixed with / will be automatically hidden in the chat.
-maplist_name is the title of the maplist menu.
+- Note that shortcuts are chat triggers, use | to split, each menu can only have up to 10 shortcuts, and the maximum number of characters is 10, and those prefixed with / will be automatically hidden in the chat.
+- maplist_name is the title of the maplist menu.
 flags are the permissions required to enter the menu.
 ```json
 {
