@@ -3,8 +3,8 @@
 #include <sourcemod>
 #include <json>
 #include <menus>
-#define PLUGIN_VERSION "0.1"
-#define MAX_READ_BYTE 4096
+#define PLUGIN_VERSION "0.2"
+#define MAX_READ_BYTE 8192
 Handle g_hConfigFile;
 Handle g_cConfigFilePath;
 Handle g_hMenuLists[20];
@@ -27,6 +27,7 @@ enum SectionType
 	Type_Menu,
 	Type_MapList,
 	Type_Text,
+	Type_Motd,
 	Type_Error
 }
 
@@ -45,6 +46,9 @@ stock SectionType GetMenuType(JSON_Object obj){
 	}
 	else if (StrEqual(type, "maplist")) {
 		return Type_MapList;
+	}
+	else if (StrEqual(type, "motd")){
+		return Type_Motd;
 	}
 	return Type_Error;
 }
@@ -118,7 +122,7 @@ bool strstarts(const char[] str, const char[] prefix)
 public Menu_Handle(Handle:main, MenuAction:action, client, param2) {
 	switch (action) {
 		case MenuAction_Select: {
-			new String:info[32];
+			char info[256];
 			GetMenuItem(main, param2, info, sizeof(info));
 			if(strstarts(info,"menuopen")){
 				ReplaceString(info, 32, "menuopen", "");
@@ -126,6 +130,18 @@ public Menu_Handle(Handle:main, MenuAction:action, client, param2) {
 			}
 			else if(strstarts(info, "maplistopen")){ 
 				DisplayMenu(g_hMapList, client, MENU_TIME_FOREVER);
+			}
+			else if(strstarts(info, "motdopen")){
+				ReplaceString(info, 32, "motdopen", "");
+				Handle setup = CreateKeyValues("data");
+				KvSetString(setup, "title", "Musicspam");
+				KvSetNum(setup, "type", MOTDPANEL_TYPE_URL);
+				KvSetNum(setup, "customsvr", 1);
+				KvSetString(setup, "msg", info);
+	
+				ShowVGUIPanel(client, "info", setup, true);
+				CloseHandle(setup);
+
 			}
 			else{
 				FakeClientCommand(client, info);
@@ -152,7 +168,7 @@ public Menu_Handle(Handle:main, MenuAction:action, client, param2) {
 
 }
 void GetSection(JSON_Object obj, const char name[64] = {'\0'}, int indexs = 0, int parent = -1){
-	PrintToServer("Parse %s", name);
+	PrintToServer("Parse %s", name, indexs, parent);
 	int k = 0;
 	g_hMenuLists[indexs] = CreateMenu(Menu_Handle, MENU_ACTIONS_DEFAULT);
 	SetMenuTitle(g_hMenuLists[indexs], name);
@@ -178,7 +194,7 @@ void GetSection(JSON_Object obj, const char name[64] = {'\0'}, int indexs = 0, i
 	}
 	JSON_Array data = view_as<JSON_Array>(obj.GetObject("data"));
 	if (data == null){
-		SetFailState("Menu but no data");
+		LogError("%s Menu but no data", name);
 	}
 	int len = data.Length;
 	for (int i = 0; i < len; i++){
@@ -196,13 +212,13 @@ void GetSection(JSON_Object obj, const char name[64] = {'\0'}, int indexs = 0, i
 		{
 			case Type_Menu:
 			{
-				if (g_hMenuLists[indexs + 1 + k] != INVALID_HANDLE)
+				while (g_hMenuLists[indexs + k] != INVALID_HANDLE)
 				{
 					k++;
 				}
-				GetSection(subObj, keyName, indexs + 1 + k, indexs);
+				GetSection(subObj, keyName, indexs + k, indexs);
 				char buffer4[64];
-				Format(buffer4, sizeof(buffer4), "menuopen%i", indexs + 1 + k);
+				Format(buffer4, sizeof(buffer4), "menuopen%i", indexs + k);
 				AddMenuItem(g_hMenuLists[indexs], buffer4, keyName);
 				k++;
 			}
@@ -221,9 +237,22 @@ void GetSection(JSON_Object obj, const char name[64] = {'\0'}, int indexs = 0, i
 					AddMenuItem(g_hMenuLists[indexs], "", keyName, ITEMDRAW_DISABLED);
 				}
 			}
+			case Type_Motd:
+			{
+				if (subObj.HasKey("url")){
+					char buffer6[256];
+					subObj.GetString("url", buffer6, sizeof(buffer6));
+					char buffer7[256];
+					Format(buffer7, sizeof(buffer7), "motdopen%s", buffer6);
+					AddMenuItem(g_hMenuLists[indexs], buffer7, keyName);
+				}
+				else{
+					LogError("%s Motd but without url", keyName);
+				}
+			}
 			case Type_Error:
 			{
-				SetFailState("Error Type!");
+				LogError("%s Error Type!", keyName);
 			}
 		}
 
