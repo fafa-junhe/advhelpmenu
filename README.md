@@ -75,11 +75,19 @@ flags are the permissions required to enter the menu.
 						"type": "text",
 						"cmd": "say /admin"
 					}
-				}]
+				},
+						{
+							"Open google": {
+								"type": "motd",
+								"url": "https://google.com"
+							}
+						}
+				]
 			}
-		}
 
+		}
 	],
 	"maplist_name": "List of Maps"
 }
+
 ```
