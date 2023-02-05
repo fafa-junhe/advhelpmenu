@@ -5,50 +5,67 @@
 				"type": "menu",
 				"shortcut": "h|!h|!help|/help|help",
 				"data": [{
-					"Vip Menu": {
-						"exit": "true",
-						"flags": "o",
-						"type": "menu",
-						"shortcut": "vip|!vip|/vip",
-						"data": [
-							{"Fly": {
-								"index": "1",
-								"type": "text",
-								"cmd": "say /fly"
-							}},
-							{"this text can't be clicked": {
-								"type": "text"
-							}}
-						]
-					}},
-					{"List of Maps": {
-						"type": "maplist"
-					}},
-					{"Thirdperson": {
-						"type": "text",
-						"cmd": "say /tp"
-					}},
-					{"Firstperson": {
-						"type": "text",
-						"cmd": "say /fp"
-					}}
-                ]
+						"Vip Menu": {
+							"exit": "true",
+							"flags": "o",
+							"type": "menu",
+							"shortcut": "vip|!vip|/vip",
+							"data": [{
+									"Fly": {
+										"type": "text",
+										"cmd": "say /fly"
+									}
+								},
+								{
+									"this text can't be clicked": {
+										"type": "text"
+									}
+								}
+							]
+						}
+					},
+					{
+						"List of Maps": {
+							"type": "maplist"
+						}
+					},
+					{
+						"Thirdperson": {
+							"type": "text",
+							"cmd": "say /tp"
+						}
+					},
+					{
+						"Firstperson": {
+							"type": "text",
+							"cmd": "say /fp"
+						}
+					}
+				]
 			}
-			}
-			,
-			{"Admin Menu": {
+		},
+		{
+			"Admin Menu": {
 				"exit": "true",
 				"type": "menu",
 				"flags": "abc",
 				"shortcut": "/adm",
 				"data": [{
-						"Open Sourcemod Admin Menu": {
-							"type": "text",
-							"cmd": "say /admin"
-						}	
-				}]
+					"Open Sourcemod Admin Menu": {
+						"type": "text",
+						"cmd": "say /admin"
+					}
+				},
+						{
+							"Open google": {
+								"type": "motd",
+								"url": "https://google.com"
+							}
+						}
+				]
 			}
-		}}
+
+		}
 	],
 	"maplist_name": "List of Maps"
 }
